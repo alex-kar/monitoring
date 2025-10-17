@@ -7,5 +7,7 @@ scrape_configs:
       - targets: ['prometheus:9090']
 
   - job_name: 'my-service'
+    metrics_path: '/actuator/prometheus'   # custom endpoint instead of /metrics
+#    scheme: 'https'                   # optional, defaults to 'http'
     static_configs:
       - targets: ['host.docker.internal:8080']
