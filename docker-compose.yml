@@ -1,6 +1,7 @@
 version: "3.8"
 
 services:
+
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -32,6 +33,31 @@ services:
       - prometheus
     networks:
       - monitoring
+
+  datadog:
+    image: gcr.io/datadoghq/agent:latest
+    container_name: datadog-agent
+    environment:
+      - DD_API_KEY=${DD_API_KEY}
+      - DD_SITE=us5.datadoghq.com
+      - DD_ENV=dev
+      - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
+      - DD_LOGS_ENABLED=true
+    volumes:
+      - ./datadog/conf.d/openmetrics.d:/etc/datadog-agent/conf.d/openmetrics.d
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    ports:
+      # DogStatsD (Metrics & Events)
+      - "8125:8125"
+      # APM / Tracing (Traces & Spans)
+      - "8126:8126"
+    networks:
+      - monitoring
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 networks:
   monitoring:

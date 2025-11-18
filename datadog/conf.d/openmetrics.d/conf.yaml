@@ -1,0 +1,7 @@
+init_config:
+
+instances:
+    - openmetrics_endpoint: 'http://host.docker.internal:8080/actuator/prometheus'
+      namespace: 'my_app'
+      metrics:
+          - '.*'
